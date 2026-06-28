@@ -10,62 +10,54 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(256), nullable=False)
     phone = db.Column(db.String(20))
-    role = db.Column(db.String(20), default='student')  # student / executor / admin
-    avatar = db.Column(db.String(10), default='🎓')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    orders = db.relationship('Order', backref='user', lazy=True, foreign_keys='Order.user_id')
-    messages = db.relationship('Message', backref='author', lazy=True)
+    orders = db.relationship('Order', backref='user', lazy=True)
 
-class ExecutorProfile(db.Model):
+class Expert(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User', backref='executor_profile')
+    name = db.Column(db.String(120), nullable=False)
+    avatar = db.Column(db.String(10), default='👨‍🎓')
+    specialization = db.Column(db.String(300))
+    experience = db.Column(db.Integer, default=3)
+    rating = db.Column(db.Float, default=4.9)
+    orders_done = db.Column(db.Integer, default=120)
     bio = db.Column(db.Text)
-    specializations = db.Column(db.String(500))
-    experience_years = db.Column(db.Integer, default=1)
-    completed_orders = db.Column(db.Integer, default=0)
-    rating = db.Column(db.Float, default=5.0)
-    avatar_emoji = db.Column(db.String(10), default='👨‍🏫')
+    is_active = db.Column(db.Boolean, default=True)
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    executor_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    expert_id = db.Column(db.Integer, db.ForeignKey('expert.id'), nullable=True)
     work_type = db.Column(db.String(100), nullable=False)
     subject = db.Column(db.String(200), nullable=False)
     specialty = db.Column(db.String(200))
     topic = db.Column(db.String(500), nullable=False)
     pages = db.Column(db.Integer, nullable=False)
     deadline = db.Column(db.String(50), nullable=False)
-    uniqueness = db.Column(db.String(50))
+    antiplagiat = db.Column(db.Integer, default=70)
     requirements = db.Column(db.Text)
     status = db.Column(db.String(50), default='Новая')
     price = db.Column(db.Float)
-    paid = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     messages = db.relationship('Message', backref='order', lazy=True)
+    expert = db.relationship('Expert', backref='orders', foreign_keys=[expert_id])
 
-    STATUS_MAP = {
-        'Новая':       ('#3B82F6', '🆕'),
-        'В работе':    ('#F59E0B', '⚙️'),
-        'На проверке': ('#8B5CF6', '🔍'),
-        'Правки':      ('#EF4444', '✏️'),
-        'Выполнена':   ('#10B981', '✅'),
-        'Отменена':    ('#6B7280', '❌'),
+    STATUS_COLORS = {
+        'Новая': '#3B82F6',
+        'В работе': '#F59E0B',
+        'На проверке': '#8B5CF6',
+        'Выполнена': '#10B981',
+        'Отменена': '#EF4444',
     }
 
     @property
     def status_color(self):
-        return self.STATUS_MAP.get(self.status, ('#6B7280', ''))[0]
-
-    @property
-    def status_icon(self):
-        return self.STATUS_MAP.get(self.status, ('#6B7280', ''))[1]
+        return self.STATUS_COLORS.get(self.status, '#6B7280')
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    sender = db.Column(db.String(50), nullable=False)  # 'user' or 'expert'
     text = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
