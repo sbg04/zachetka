@@ -279,6 +279,22 @@ def admin_message(oid):
         db.session.add(msg); db.session.commit()
     return redirect(url_for('admin_order_detail', oid=oid))
 
+
+# Auto-migrate: add missing columns
+with app.app_context():
+    from sqlalchemy import text, inspect
+    insp = inspect(db.engine)
+    if 'order' in insp.get_table_names():
+        cols = [c['name'] for c in insp.get_columns('order')]
+        with db.engine.connect() as conn:
+            if 'expert_id' not in cols:
+                conn.execute(text('ALTER TABLE "order" ADD COLUMN expert_id INTEGER'))
+            if 'specialty' not in cols:
+                conn.execute(text('ALTER TABLE "order" ADD COLUMN specialty VARCHAR(200)'))
+            if 'antiplagiat' not in cols:
+                conn.execute(text('ALTER TABLE "order" ADD COLUMN antiplagiat INTEGER DEFAULT 70'))
+            conn.commit()
+
 with app.app_context():
     db.create_all()
     seed_data()
