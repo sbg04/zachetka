@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Заявка #{{ order.id }} — Админ{% endblock %}
+{% block content %}
+<div style="min-height:calc(100vh - var(--nh));background:#0F172A;padding:32px 24px">
+  <div style="max-width:800px;margin:0 auto">
+    <a href="{{ url_for('admin_panel') }}" style="color:#60A5FA;font-size:.875rem;font-weight:600;display:inline-block;margin-bottom:20px">← Назад к панели</a>
+
+    <div style="background:#1E293B;border:1px solid #334155;border-radius:20px;overflow:hidden">
+      <div style="background:linear-gradient(135deg,#1E1B4B,#312E81);padding:28px 32px">
+        <div style="font-size:.75rem;color:rgba(255,255,255,.5);margin-bottom:4px">Заявка #{{ order.id }} · {{ order.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+        <h2 style="font-family:var(--fd);font-size:1.5rem;color:#fff">{{ order.topic }}</h2>
+        <span style="display:inline-block;margin-top:10px;padding:4px 14px;border-radius:50px;font-size:.75rem;font-weight:700;color:#fff;background:{{ order.status_color }}">{{ order.status }}</span>
+      </div>
+
+      <div style="padding:28px 32px">
+        <!-- Info -->
+        {% for k,v in [
+          ('Студент', order.user.name + ' · ' + order.user.email),
+          ('Телефон', order.user.phone or '—'),
+          ('Тип работы', order.work_type),
+          ('Предмет', order.subject),
+          ('Специальность', order.specialty or '—'),
+          ('Страниц', order.pages|string),
+          ('Срок', order.deadline),
+          ('Антиплагиат', order.antiplagiat|string + '%'),
+          ('Требования', order.requirements or '—'),
+        ] %}
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #334155;gap:16px;flex-wrap:wrap">
+          <div style="font-size:.8rem;font-weight:600;color:#64748B;min-width:140px">{{ k }}</div>
+          <div style="font-size:.875rem;color:#E2E8F0;text-align:right">{{ v }}</div>
+        </div>
+        {% endfor %}
+
+        <!-- Update form -->
+        <div style="margin-top:24px;background:#0F172A;border-radius:14px;padding:20px">
+          <div style="color:#fff;font-weight:700;margin-bottom:16px">Обновить заявку</div>
+          <form method="POST" action="{{ url_for('admin_update_order', oid=order.id) }}" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+            <div style="flex:1 1 160px">
+              <label style="display:block;font-size:.75rem;color:#64748B;margin-bottom:6px">Статус</label>
+              <select name="status" style="width:100%;background:#1E293B;color:#fff;border:1px solid #334155;padding:10px 14px;border-radius:10px;font-size:.875rem">
+                {% for s in ['Новая','В работе','На проверке','Выполнена','Отменена'] %}
+                <option {% if order.status==s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div style="flex:1 1 140px">
+              <label style="display:block;font-size:.75rem;color:#64748B;margin-bottom:6px">Цена (₽)</label>
+              <input type="number" name="price" value="{{ order.price|int if order.price else '' }}" placeholder="0" style="width:100%;background:#1E293B;color:#fff;border:1px solid #334155;padding:10px 14px;border-radius:10px;font-size:.875rem">
+            </div>
+            <button type="submit" style="background:#3B82F6;color:#fff;border:none;padding:10px 24px;border-radius:10px;font-weight:700;cursor:pointer;font-size:.875rem">Сохранить</button>
+          </form>
+        </div>
+
+        <!-- Chat -->
+        <div style="margin-top:20px;background:#0F172A;border-radius:14px;padding:20px">
+          <div style="color:#fff;font-weight:700;margin-bottom:14px">💬 Чат со студентом</div>
+          <div style="max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+            {% if order.messages %}
+              {% for m in order.messages %}
+              <div style="max-width:75%;padding:10px 14px;border-radius:12px;font-size:.85rem;line-height:1.5;{% if m.sender=='user' %}align-self:flex-end;background:#3B82F6;color:#fff;border-radius:12px 12px 2px 12px{% else %}align-self:flex-start;background:#1E293B;color:#E2E8F0;border-radius:12px 12px 12px 2px{% endif %}">
+                {{ m.text }}
+                <div style="font-size:.68rem;opacity:.6;margin-top:4px">{{ m.created_at.strftime('%d.%m %H:%M') }} · {{ 'Студент' if m.sender=='user' else 'Исполнитель' }}</div>
+              </div>
+              {% endfor %}
+            {% else %}
+            <div style="text-align:center;color:#64748B;font-size:.85rem;padding:16px">Сообщений нет</div>
+            {% endif %}
+          </div>
+          <form method="POST" action="{{ url_for('admin_message', oid=order.id) }}" style="display:flex;gap:10px">
+            <input type="text" name="text" placeholder="Написать студенту..." required style="flex:1;background:#1E293B;color:#fff;border:1px solid #334155;padding:10px 14px;border-radius:10px;font-size:.875rem">
+            <button type="submit" style="background:#6366F1;color:#fff;border:none;padding:10px 20px;border-radius:10px;font-weight:600;cursor:pointer;font-size:.875rem">Отправить</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

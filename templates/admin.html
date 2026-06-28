@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Админ-панель — Зачётка{% endblock %}
+{% block content %}
+<div style="min-height:calc(100vh - var(--nh));background:#0F172A">
+
+  <!-- ADMIN HEADER -->
+  <div style="background:linear-gradient(135deg,#1E1B4B,#312E81);padding:24px;border-bottom:1px solid rgba(255,255,255,.1)">
+    <div style="max-width:1300px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);margin-bottom:4px">🔐 Административная панель</div>
+        <h1 style="font-family:var(--fd);font-size:1.6rem;color:#fff">Управление заявками</h1>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="{{ url_for('admin_panel') }}" style="background:rgba(255,255,255,.1);color:#fff;padding:8px 16px;border-radius:9px;font-size:.85rem;font-weight:600">🔄 Обновить</a>
+        <a href="{{ url_for('index') }}" style="background:rgba(255,255,255,.1);color:#fff;padding:8px 16px;border-radius:9px;font-size:.85rem;font-weight:600">🌐 Сайт</a>
+        <a href="{{ url_for('admin_logout') }}" style="background:#EF4444;color:#fff;padding:8px 16px;border-radius:9px;font-size:.85rem;font-weight:600">Выйти</a>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1300px;margin:0 auto;padding:28px 24px">
+
+    <!-- STATS -->
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px">
+      <div style="flex:1 1 140px;background:#1E293B;border:1px solid #334155;border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:#60A5FA">{{ stats.total }}</div>
+        <div style="font-size:.75rem;color:#64748B;margin-top:2px">Всего заявок</div>
+      </div>
+      <div style="flex:1 1 140px;background:#1E293B;border:1px solid #334155;border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:#FBBF24">{{ stats.new }}</div>
+        <div style="font-size:.75rem;color:#64748B;margin-top:2px">Новые</div>
+      </div>
+      <div style="flex:1 1 140px;background:#1E293B;border:1px solid #334155;border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:#F59E0B">{{ stats.active }}</div>
+        <div style="font-size:.75rem;color:#64748B;margin-top:2px">В работе</div>
+      </div>
+      <div style="flex:1 1 140px;background:#1E293B;border:1px solid #334155;border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:#34D399">{{ stats.done }}</div>
+        <div style="font-size:.75rem;color:#64748B;margin-top:2px">Выполнено</div>
+      </div>
+      <div style="flex:1 1 140px;background:#1E293B;border:1px solid #334155;border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:#A78BFA">{{ stats.users }}</div>
+        <div style="font-size:#64748B;margin-top:2px;font-size:.75rem;color:#64748B">Пользователей</div>
+      </div>
+      <div style="flex:1 1 140px;background:#1E293B;border:1px solid #334155;border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:2rem;font-weight:900;color:#34D399">{{ "%.0f"|format(stats.revenue) }} ₽</div>
+        <div style="font-size:.75rem;color:#64748B;margin-top:2px">Выручка</div>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div style="background:#1E293B;border:1px solid #334155;border-radius:14px;padding:18px 20px;margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <span style="color:#94A3B8;font-size:.85rem;font-weight:600">Фильтр:</span>
+      <a href="{{ url_for('admin_panel') }}" style="padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:600;{% if not status_filter %}background:#3B82F6;color:#fff{% else %}background:#334155;color:#94A3B8{% endif %}">Все</a>
+      {% for s, c in [('Новая','#3B82F6'),('В работе','#F59E0B'),('На проверке','#8B5CF6'),('Выполнена','#10B981'),('Отменена','#EF4444')] %}
+      <a href="{{ url_for('admin_panel', status=s) }}" style="padding:6px 14px;border-radius:8px;font-size:.8rem;font-weight:600;{% if status_filter==s %}background:{{ c }};color:#fff{% else %}background:#334155;color:#94A3B8{% endif %}">{{ s }}</a>
+      {% endfor %}
+    </div>
+
+    <!-- ORDERS TABLE -->
+    <div style="background:#1E293B;border:1px solid #334155;border-radius:14px;overflow:hidden">
+      <div style="padding:18px 20px;border-bottom:1px solid #334155;display:flex;align-items:center;justify-content:space-between">
+        <span style="color:#fff;font-weight:700;font-size:.95rem">Заявки ({{ orders|length }})</span>
+      </div>
+      {% if orders %}
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="border-bottom:1px solid #334155">
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">#</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Студент</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Работа</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Тема</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Срок</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Цена</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Статус</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for o in orders %}
+            <tr style="border-bottom:1px solid #1E293B;transition:background .15s" onmouseover="this.style.background='#0F172A'" onmouseout="this.style.background='transparent'">
+              <td style="padding:14px 16px;color:#64748B;font-size:.82rem">#{{ o.id }}</td>
+              <td style="padding:14px 16px">
+                <div style="color:#fff;font-size:.85rem;font-weight:600">{{ o.user.name }}</div>
+                <div style="color:#64748B;font-size:.75rem">{{ o.user.email }}</div>
+                {% if o.user.phone %}<div style="color:#64748B;font-size:.75rem">{{ o.user.phone }}</div>{% endif %}
+              </td>
+              <td style="padding:14px 16px">
+                <div style="color:#60A5FA;font-size:.75rem;font-weight:700">{{ o.work_type }}</div>
+                <div style="color:#94A3B8;font-size:.75rem">{{ o.subject }}</div>
+                <div style="color:#64748B;font-size:.72rem">{{ o.pages }} стр.</div>
+              </td>
+              <td style="padding:14px 16px;max-width:200px">
+                <div style="color:#E2E8F0;font-size:.82rem;line-height:1.4">{{ o.topic[:60] }}{% if o.topic|length > 60 %}…{% endif %}</div>
+              </td>
+              <td style="padding:14px 16px;color:#FBBF24;font-size:.82rem;white-space:nowrap">{{ o.deadline }}</td>
+              <td style="padding:14px 16px;color:#34D399;font-size:.9rem;font-weight:800;white-space:nowrap">
+                {% if o.price %}{{ "%.0f"|format(o.price) }} ₽{% else %}—{% endif %}
+              </td>
+              <td style="padding:14px 16px">
+                <span style="padding:4px 12px;border-radius:50px;font-size:.72rem;font-weight:700;color:#fff;background:{{ o.status_color }}">{{ o.status }}</span>
+              </td>
+              <td style="padding:14px 16px">
+                <form method="POST" action="{{ url_for('admin_update_order', oid=o.id) }}" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                  <select name="status" style="background:#334155;color:#fff;border:none;padding:6px 10px;border-radius:8px;font-size:.78rem;cursor:pointer">
+                    {% for s in ['Новая','В работе','На проверке','Выполнена','Отменена'] %}
+                    <option {% if o.status==s %}selected{% endif %}>{{ s }}</option>
+                    {% endfor %}
+                  </select>
+                  <input name="price" type="number" value="{{ o.price|int if o.price else '' }}" placeholder="Цена ₽" style="background:#334155;color:#fff;border:none;padding:6px 10px;border-radius:8px;font-size:.78rem;width:90px">
+                  <button type="submit" style="background:#3B82F6;color:#fff;border:none;padding:6px 12px;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer">✓</button>
+                </form>
+                <div style="margin-top:6px">
+                  <a href="{{ url_for('admin_order_detail', oid=o.id) }}" style="color:#A78BFA;font-size:.75rem;font-weight:600">Подробнее →</a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="text-align:center;padding:48px;color:#64748B">Заявок нет</div>
+      {% endif %}
+    </div>
+
+    <!-- USERS -->
+    <div style="margin-top:24px;background:#1E293B;border:1px solid #334155;border-radius:14px;overflow:hidden">
+      <div style="padding:18px 20px;border-bottom:1px solid #334155">
+        <span style="color:#fff;font-weight:700;font-size:.95rem">Пользователи ({{ users|length }})</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="border-bottom:1px solid #334155">
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">#</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Имя</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Email</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Телефон</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Заявок</th>
+              <th style="padding:12px 16px;text-align:left;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#64748B">Регистрация</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+            <tr style="border-bottom:1px solid #0F172A">
+              <td style="padding:12px 16px;color:#64748B;font-size:.82rem">#{{ u.id }}</td>
+              <td style="padding:12px 16px;color:#fff;font-size:.85rem;font-weight:600">{{ u.name }}</td>
+              <td style="padding:12px 16px;color:#60A5FA;font-size:.82rem">{{ u.email }}</td>
+              <td style="padding:12px 16px;color:#94A3B8;font-size:.82rem">{{ u.phone or '—' }}</td>
+              <td style="padding:12px 16px;color:#FBBF24;font-size:.85rem;font-weight:700">{{ u.orders|length }}</td>
+              <td style="padding:12px 16px;color:#64748B;font-size:.78rem">{{ u.created_at.strftime('%d.%m.%Y') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
