@@ -279,8 +279,9 @@ def admin_message(oid):
         db.session.add(msg); db.session.commit()
     return redirect(url_for('admin_order_detail', oid=oid))
 
+with app.app_context():
+    db.create_all()
+    seed_data()
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        seed_data()
     app.run(debug=True, port=5000)
