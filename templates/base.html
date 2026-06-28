@@ -2,33 +2,50 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>{% block title %}Зачётка — Твоя сессия, наша забота{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-<nav class="navbar">
+<nav class="navbar" id="navbar">
   <div class="nav-inner">
     <a href="{{ url_for('index') }}" class="nav-logo">
-      <div class="nav-logo-icon">📓</div>
-      Зачётка
+      <div class="logo-icon">З</div>
+      <div class="logo-text">
+        <span class="logo-name">Зачётка</span>
+        <span class="logo-slogan">твоя сессия — наша забота</span>
+      </div>
     </a>
     <div class="nav-links">
       <a href="{{ url_for('services') }}">Услуги</a>
-      <a href="{{ url_for('executors') }}">Авторы</a>
+      <a href="{{ url_for('experts') }}">Авторы</a>
       <a href="{{ url_for('blog') }}">Блог</a>
       <a href="{{ url_for('faq') }}">FAQ</a>
       {% if current_user.is_authenticated %}
-        <a href="{{ url_for('new_order') }}" class="nav-btn-order">+ Заявка</a>
-        <a href="{{ url_for('dashboard') }}" class="nav-btn-dash">Кабинет</a>
+        <a href="{{ url_for('new_order') }}" class="nav-btn nav-btn--order">+ Заявка</a>
+        <a href="{{ url_for('dashboard') }}" class="nav-btn nav-btn--dash">Кабинет</a>
       {% else %}
-        <a href="{{ url_for('login') }}" class="nav-btn-login">Войти</a>
-        <a href="{{ url_for('register') }}" class="nav-btn-order">Начать</a>
+        <a href="{{ url_for('login') }}" class="nav-btn nav-btn--login">Войти</a>
+        <a href="{{ url_for('register') }}" class="nav-btn nav-btn--order">Регистрация</a>
       {% endif %}
     </div>
+    <button class="nav-burger" id="burger" onclick="toggleMenu()">☰</button>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="{{ url_for('services') }}">Услуги</a>
+    <a href="{{ url_for('experts') }}">Авторы</a>
+    <a href="{{ url_for('blog') }}">Блог</a>
+    <a href="{{ url_for('faq') }}">FAQ</a>
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('new_order') }}">+ Новая заявка</a>
+      <a href="{{ url_for('dashboard') }}">Личный кабинет</a>
+    {% else %}
+      <a href="{{ url_for('login') }}">Войти</a>
+      <a href="{{ url_for('register') }}">Зарегистрироваться</a>
+    {% endif %}
   </div>
 </nav>
 
@@ -36,7 +53,9 @@
   {% if messages %}
     <div class="flash-wrap">
       {% for cat, msg in messages %}
-        <div class="flash flash--{{ cat }}">{{ msg }}</div>
+        <div class="flash flash--{{ cat }}">
+          <span>{{ '✅' if cat=='success' else '❌' }}</span> {{ msg }}
+        </div>
       {% endfor %}
     </div>
   {% endif %}
@@ -45,13 +64,17 @@
 {% block content %}{% endblock %}
 
 <footer class="footer">
+  <div class="footer-glow"></div>
   <div class="footer-inner">
     <div class="footer-brand">
-      <div class="footer-logo">
-        <div class="footer-logo-icon">📓</div>
-        <strong>Зачётка</strong>
+      <div class="logo-icon logo-icon--sm">З</div>
+      <strong>Зачётка</strong>
+      <p>Твоя сессия — наша забота</p>
+      <div class="footer-contacts">
+        <a href="mailto:help@zachetka.ru">📧 help@zachetka.ru</a>
+        <a href="#">💬 Telegram</a>
+        <a href="#">📱 WhatsApp</a>
       </div>
-      <p>Твоя сессия — наша забота.<br>Помогаем студентам с 2018 года.</p>
     </div>
     <div class="footer-cols">
       <div>
@@ -60,25 +83,30 @@
         <a href="{{ url_for('services') }}">Курсовые</a>
         <a href="{{ url_for('services') }}">Рефераты</a>
         <a href="{{ url_for('services') }}">Решение задач</a>
-        <a href="{{ url_for('services') }}">По ГОСТу</a>
+        <a href="{{ url_for('services') }}">Лабораторные</a>
       </div>
       <div>
         <h4>Сервис</h4>
-        <a href="{{ url_for('executors') }}">Наши авторы</a>
+        <a href="{{ url_for('experts') }}">Наши авторы</a>
         <a href="{{ url_for('blog') }}">Блог</a>
         <a href="{{ url_for('faq') }}">FAQ</a>
-        <a href="{{ url_for('register') }}">Регистрация</a>
+        <a href="{{ url_for('new_order') }}">Оставить заявку</a>
       </div>
       <div>
-        <h4>Контакты</h4>
-        <a href="mailto:help@zachetka.ru">help@zachetka.ru</a>
-        <a href="#">Telegram</a>
-        <a href="#">WhatsApp</a>
-        <a href="#">ВКонтакте</a>
+        <h4>Аккаунт</h4>
+        <a href="{{ url_for('register') }}">Регистрация</a>
+        <a href="{{ url_for('login') }}">Войти</a>
+        {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}">Мои заявки</a>
+        <a href="{{ url_for('profile') }}">Профиль</a>
+        {% endif %}
       </div>
     </div>
   </div>
-  <div class="footer-bottom">© 2026 Зачётка. Все права защищены. Сайт носит информационный характер.</div>
+  <div class="footer-bottom">
+    <span>© 2026 Зачётка. Все права защищены.</span>
+    <span>Образовательные услуги · Конфиденциальность · Условия</span>
+  </div>
 </footer>
 
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
