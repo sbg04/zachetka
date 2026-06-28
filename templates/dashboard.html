@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет — Зачётка{% endblock %}
+{% block content %}
+<div class="dash-page">
+  <div class="dash-header">
+    <div class="dash-header-inner">
+      <div class="dash-greeting">
+        <h2>Привет, {{ current_user.name.split()[0] }}! 👋</h2>
+        <p>Личный кабинет · <a href="{{ url_for('profile') }}" style="color:rgba(255,255,255,.7);text-decoration:underline">Профиль</a> · <a href="{{ url_for('logout') }}" style="color:rgba(255,255,255,.5)">Выйти</a></p>
+      </div>
+      <a href="{{ url_for('new_order') }}" class="btn-new-order">+ Новая заявка</a>
+    </div>
+  </div>
+  <div class="dash-body">
+    <div class="dash-stats">
+      <div class="dash-stat"><div class="ds-icon blue">📋</div><div><div class="ds-val">{{ stats.total }}</div><div class="ds-lbl">Всего заявок</div></div></div>
+      <div class="dash-stat"><div class="ds-icon yellow">⏳</div><div><div class="ds-val">{{ stats.active }}</div><div class="ds-lbl">В работе</div></div></div>
+      <div class="dash-stat"><div class="ds-icon green">✅</div><div><div class="ds-val">{{ stats.done }}</div><div class="ds-lbl">Выполнено</div></div></div>
+    </div>
+    <div class="orders-section">
+      <h3>Мои заявки</h3>
+      {% if orders %}
+        <div class="orders-list">
+          {% for o in orders %}
+          <div class="order-card">
+            <div class="order-main">
+              <div class="order-type">{{ o.work_type }}</div>
+              <div class="order-topic">{{ o.topic[:70] }}{% if o.topic|length > 70 %}…{% endif %}</div>
+              <div class="order-meta">{{ o.subject }}{% if o.specialty %} · {{ o.specialty }}{% endif %} · {{ o.pages }} стр. · Срок: {{ o.deadline }}</div>
+            </div>
+            <div class="order-right">
+              {% if o.price %}<div class="order-price">{{ "%.0f"|format(o.price) }} ₽</div>{% endif %}
+              <span class="status-badge" style="background:{{ o.status_color }}">{{ o.status_icon }} {{ o.status }}</span>
+              <a href="{{ url_for('order_detail', order_id=o.id) }}" class="btn-detail">Открыть</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="orders-empty">
+          <div class="empty-icon">📭</div>
+          <p>У вас ещё нет заявок.<br>Оставьте первую — и мы поможем со сдачей!</p>
+          <a href="{{ url_for('new_order') }}" class="btn-cta">Оставить заявку</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

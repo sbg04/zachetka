@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Блог — Зачётка{% endblock %}
+{% block content %}
+<div class="blog-page">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">База знаний</span>
+      <h2>Полезные статьи для студентов</h2>
+      <p>Советы по написанию, оформлению и защите учебных работ</p>
+    </div>
+    <div class="blog-grid" style="max-width:1100px;margin:0 auto">
+      {% for post in posts %}
+      <a href="{{ url_for('blog_post', slug=post.slug) }}" class="blog-card">
+        <div class="blog-img">{{ post.emoji }}</div>
+        <div class="blog-body">
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.excerpt }}</p>
+          <span class="blog-link">Читать →</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block title %}Зачётка — Твоя сессия, наша забота{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-badge"><div class="hero-badge-dot"></div> Помощь студентам с 2018 года · 2026</div>
+    <h1>Твоя сессия —<br><em>наша забота</em></h1>
+    <p class="hero-sub">Дипломные, курсовые, рефераты и контрольные — пишем качественно, сдаём в срок. Более 300 авторов-экспертов.</p>
+    <div class="hero-btns">
+      <a href="{{ url_for('new_order') }}" class="btn-hero-primary">🚀 Оставить заявку</a>
+      <a href="{{ url_for('services') }}" class="btn-hero-secondary">Посмотреть услуги</a>
+    </div>
+    <div class="hero-cards">
+      <div class="hero-card">
+        <div class="hero-card-icon">📚</div>
+        <div><div class="hero-card-val">12 400+</div><div class="hero-card-lbl">работ выполнено</div></div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-icon">⭐</div>
+        <div><div class="hero-card-val">98%</div><div class="hero-card-lbl">довольных студентов</div></div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-icon">👨‍🏫</div>
+        <div><div class="hero-card-val">300+</div><div class="hero-card-lbl">авторов-экспертов</div></div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-icon">⚡</div>
+        <div><div class="hero-card-val">15 мин</div><div class="hero-card-lbl">ответ менеджера</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" fill="white">
+      <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z"/>
+    </svg>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Каталог услуг</span>
+      <h2>Любая учебная работа</h2>
+      <p>От реферата до дипломной — выполним любой уровень сложности</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card"><span class="service-icon">🎓</span><h3>Дипломная (ВКР)</h3><p>Антиплагиат от 80%, нормоконтроль, все главы</p></div>
+      <div class="service-card"><span class="service-badge">Хит</span><span class="service-icon">📚</span><h3>Курсовая работа</h3><p>По вашей теме и методичке вуза</p></div>
+      <div class="service-card"><span class="service-icon">📄</span><h3>Реферат и эссе</h3><p>Срочно от 6 часов</p></div>
+      <div class="service-card"><span class="service-icon">🧮</span><h3>Решение задач</h3><p>Математика, физика, программирование</p></div>
+      <div class="service-card"><span class="service-icon">🔬</span><h3>Лабораторные</h3><p>С расчётами и графиками по ГОСТ</p></div>
+      <div class="service-card"><span class="service-icon">📊</span><h3>Бизнес-план</h3><p>С финмоделью и анализом рынка</p></div>
+      <div class="service-card"><span class="service-icon">📐</span><h3>Оформление по ГОСТу</h3><p>Редактура, сноски, список литературы</p></div>
+      <div class="service-card"><span class="service-icon">🎯</span><h3>Консультация</h3><p>Разбор темы диплома с экспертом</p></div>
+    </div>
+    <div style="text-align:center;margin-top:28px">
+      <a href="{{ url_for('services') }}" style="color:var(--blue-mid);font-weight:700;font-size:.9rem">Все услуги →</a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section section--blue">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Процесс</span>
+      <h2>Как это работает</h2>
+      <p>Четыре шага — и работа у вас в руках</p>
+    </div>
+    <div class="steps-wrap">
+      <div class="step-item"><div class="step-circle">1</div><h3>Оставьте заявку</h3><p>Тип работы, предмет, специальность и срок</p></div>
+      <div class="step-item"><div class="step-circle">2</div><h3>Получите расчёт</h3><p>Менеджер свяжется за 15 минут</p></div>
+      <div class="step-item"><div class="step-circle">3</div><h3>Эксперт пишет</h3><p>Следите за прогрессом в чате кабинета</p></div>
+      <div class="step-item"><div class="step-circle">4</div><h3>Получите работу</h3><p>До дедлайна. Правки бесплатно</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER FORM -->
+<section class="order-section" id="order">
+  <div class="section-inner">
+    <div class="order-form-card">
+      <div class="section-head" style="margin-bottom:32px">
+        <span class="eyebrow">Быстрая заявка</span>
+        <h2 style="color:#fff">Оставьте заявку сейчас</h2>
+        <p style="color:rgba(255,255,255,.65)">Расчёт стоимости бесплатно — за 15 минут</p>
+      </div>
+      {% if current_user.is_authenticated %}
+      <form action="{{ url_for('new_order') }}" method="POST" id="quickOrderForm">
+        <div class="oform-grid">
+          <div class="oform-group">
+            <label>Тип работы *</label>
+            <select name="work_type" required>
+              <option value="">— выберите —</option>
+              <option>Дипломная работа (ВКР)</option>
+              <option>Курсовая работа</option>
+              <option>Реферат</option>
+              <option>Контрольная работа</option>
+              <option>Лабораторная работа</option>
+              <option>Решение задач</option>
+              <option>Эссе</option>
+              <option>Отчёт по практике</option>
+              <option>Бизнес-план</option>
+              <option>Консультация по диплому</option>
+              <option>Редактура и оформление по ГОСТу</option>
+            </select>
+          </div>
+          <div class="oform-group">
+            <label>Предмет *</label>
+            <input type="text" name="subject" placeholder="Напишите предмет..." required>
+          </div>
+          <div class="oform-group">
+            <label>Специальность</label>
+            <input type="text" name="specialty" placeholder="Например: Экономика 38.03.01">
+          </div>
+          <div class="oform-group full">
+            <label>Тема работы *</label>
+            <input type="text" name="topic" placeholder="Введите тему работы..." required>
+          </div>
+          <div class="oform-group">
+            <label>Страниц *</label>
+            <input type="number" name="pages" id="q_pages" min="1" placeholder="30" required>
+          </div>
+          <div class="oform-group">
+            <label>Срок сдачи *</label>
+            <input type="date" name="deadline" id="q_deadline" required>
+          </div>
+          <div class="oform-group">
+            <label>Уникальность</label>
+            <input type="text" name="uniqueness" placeholder="Например: 75% Антиплагиат.ру">
+          </div>
+          <div class="oform-group full">
+            <label>Доп. требования</label>
+            <textarea name="requirements" placeholder="Методичка, особые требования, обязательные источники..."></textarea>
+          </div>
+        </div>
+        <div class="price-box" id="qPriceBox" style="display:none;margin:16px 0">
+          <span>Ориентировочная стоимость:</span>
+          <strong id="qPriceVal">—</strong>
+        </div>
+        <button type="submit" class="btn-submit-glow">🚀 Отправить заявку</button>
+      </form>
+      {% else %}
+      <div style="text-align:center;padding:20px 0">
+        <p style="color:rgba(255,255,255,.75);margin-bottom:20px;font-size:1rem">Зарегистрируйтесь, чтобы оставить заявку — это бесплатно и займёт минуту</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a href="{{ url_for('register') }}" class="btn-submit-glow" style="display:inline-block;text-align:center;padding:14px 40px">Создать аккаунт</a>
+          <a href="{{ url_for('login') }}" class="btn-hero-secondary" style="display:inline-block;text-align:center;padding:14px 32px">Войти</a>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- EXECUTORS -->
+<section class="section section--gray">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Наши авторы</span>
+      <h2>Профили исполнителей</h2>
+      <p>Выбирайте эксперта по специализации, рейтингу и числу выполненных работ</p>
+    </div>
+    <div class="exec-grid">
+      {% for ep in executors %}
+      <div class="exec-card">
+        <div class="exec-avatar">{{ ep.avatar_emoji }}</div>
+        <div class="exec-name">{{ ep.user.name }}</div>
+        <div class="exec-spec">{{ ep.specializations }}</div>
+        <div class="exec-stars">{% for i in range(ep.rating|int) %}★{% endfor %} {{ ep.rating }}</div>
+        <div class="exec-stats">
+          <div class="exec-stat"><strong>{{ ep.completed_orders }}</strong><span>работ</span></div>
+          <div class="exec-stat"><strong>{{ ep.experience_years }} лет</strong><span>опыт</span></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:28px">
+      <a href="{{ url_for('executors') }}" style="color:var(--blue-mid);font-weight:700;font-size:.9rem">Все авторы →</a>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Отзывы</span>
+      <h2>Что говорят студенты</h2>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-text">Заказывал курсовую по экономике. Сдал на отлично, научник был очень доволен. Строго по методичке, список литературы идеальный.</p><div class="review-author"><div class="review-ava">🧑‍🎓</div><div><div class="review-name">Артём К.</div><div class="review-uni">МГТУ им. Баумана, 3 курс</div></div></div></div>
+      <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-text">Дипломную взяли срочно — за 2 недели. Антиплагиат 84%, нормоконтроль прошёл. Защитилась на «хорошо», однозначно рекомендую!</p><div class="review-author"><div class="review-ava">👩‍🎓</div><div><div class="review-name">Мария В.</div><div class="review-uni">РАНХиГС, выпускница</div></div></div></div>
+      <div class="review-card"><div class="review-stars">★★★★★</div><p class="review-text">Решение задач по высшей математике — всё с подробными объяснениями. Смог сам разобрать материал перед экзаменом. Молодцы!</p><div class="review-author"><div class="review-ava">👨‍💻</div><div><div class="review-name">Никита Р.</div><div class="review-uni">МИФИ, 2 курс</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- GUARANTEES -->
+<section class="section section--blue">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Гарантии</span>
+      <h2>Почему выбирают Зачётку</h2>
+    </div>
+    <div class="guarantees-grid">
+      <div class="guarantee-card"><span class="g-icon">🛡️</span><h3>Гарантия качества</h3><p>Бесплатные правки до принятия преподавателем</p></div>
+      <div class="guarantee-card"><span class="g-icon">⏰</span><h3>Точно в срок</h3><p>Компенсация, если не успеем к дедлайну</p></div>
+      <div class="guarantee-card"><span class="g-icon">🔒</span><h3>Конфиденциально</h3><p>Ваши данные не передаются третьим лицам</p></div>
+      <div class="guarantee-card"><span class="g-icon">💳</span><h3>Защита оплаты</h3><p>Поэтапная оплата, деньги в резерве до выполнения</p></div>
+      <div class="guarantee-card"><span class="g-icon">📊</span><h3>Антиплагиат</h3><p>Уникальность от 70% по Antiplagiat.ru и Unicheck</p></div>
+      <div class="guarantee-card"><span class="g-icon">💬</span><h3>Чат с автором</h3><p>Прямая коммуникация и контроль этапов в кабинете</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+{% if posts %}
+<section class="section section--gray">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">База знаний</span>
+      <h2>Полезные статьи</h2>
+      <p>Советы для студентов: как сдать сессию без стресса</p>
+    </div>
+    <div class="blog-grid">
+      {% for post in posts %}
+      <a href="{{ url_for('blog_post', slug=post.slug) }}" class="blog-card">
+        <div class="blog-img">{{ post.emoji }}</div>
+        <div class="blog-body">
+          <h3>{{ post.title }}</h3>
+          <p>{{ post.excerpt }}</p>
+          <span class="blog-link">Читать →</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div style="text-align:center;margin-top:28px">
+      <a href="{{ url_for('blog') }}" style="color:var(--blue-mid);font-weight:700;font-size:.9rem">Все статьи →</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>Не рискуй сессией —<br>доверь профессионалам</h2>
+    <p>Более 12 000 студентов уже сдали работы с нашей помощью</p>
+    <div class="cta-btns">
+      <a href="{{ url_for('new_order') }}" class="btn-cta">Оставить заявку</a>
+      <a href="{{ url_for('faq') }}" class="btn-cta-outline">Частые вопросы</a>
+    </div>
+  </div>
+</section>
+
+<script>
+const PRICE={'Дипломная работа (ВКР)':150,'Курсовая работа':80,'Реферат':40,'Контрольная работа':40,'Эссе':40,'Лабораторная работа':60,'Решение задач':50,'Отчёт по практике':70,'Бизнес-план':90,'Консультация по диплому':200,'Редактура и оформление по ГОСТу':30};
+const qForm=document.getElementById('quickOrderForm');
+if(qForm){
+  const wt=qForm.querySelector('[name=work_type]'),pg=document.getElementById('q_pages'),box=document.getElementById('qPriceBox'),val=document.getElementById('qPriceVal');
+  function upd(){const b=PRICE[wt&&wt.value]||0,p=parseInt(pg&&pg.value)||0;if(b&&p){val.textContent='от '+(b*p).toLocaleString('ru')+' ₽';box.style.display='flex';}else box.style.display='none';}
+  if(wt)wt.addEventListener('change',upd);
+  if(pg)pg.addEventListener('input',upd);
+  const dl=document.getElementById('q_deadline');
+  if(dl)dl.min=new Date().toISOString().split('T')[0];
+}
+</script>
+{% endblock %}

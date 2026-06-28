@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Заявка #{{ order.id }} — Зачётка{% endblock %}
+{% block content %}
+<div class="detail-page">
+  <div class="detail-wrap">
+    <a href="{{ url_for('dashboard') }}" class="btn-back">Личный кабинет</a>
+    <div class="detail-card">
+      <div class="detail-head">
+        <h2>Заявка #{{ order.id }}</h2>
+        <p style="opacity:.7;margin-top:4px;font-size:.85rem">Подана {{ order.created_at.strftime('%d.%m.%Y в %H:%M') }}</p>
+        <span class="status-badge" style="background:{{ order.status_color }};margin-top:12px;display:inline-block">{{ order.status_icon }} {{ order.status }}</span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row"><div class="detail-key">Тип работы</div><div class="detail-val">{{ order.work_type }}</div></div>
+        <div class="detail-row"><div class="detail-key">Предмет</div><div class="detail-val">{{ order.subject }}</div></div>
+        {% if order.specialty %}<div class="detail-row"><div class="detail-key">Специальность</div><div class="detail-val">{{ order.specialty }}</div></div>{% endif %}
+        <div class="detail-row"><div class="detail-key">Тема</div><div class="detail-val" style="text-align:left">{{ order.topic }}</div></div>
+        <div class="detail-row"><div class="detail-key">Страниц</div><div class="detail-val">{{ order.pages }}</div></div>
+        <div class="detail-row"><div class="detail-key">Срок сдачи</div><div class="detail-val">{{ order.deadline }}</div></div>
+        {% if order.uniqueness %}<div class="detail-row"><div class="detail-key">Уникальность</div><div class="detail-val">{{ order.uniqueness }}</div></div>{% endif %}
+        {% if order.requirements %}<div class="detail-row"><div class="detail-key">Требования</div><div class="detail-val" style="text-align:left">{{ order.requirements }}</div></div>{% endif %}
+        {% if order.price %}<div class="detail-row"><div class="detail-key">Стоимость</div><div class="detail-val" style="font-size:1.3rem;font-weight:900;color:var(--blue-navy)">{{ "%.0f"|format(order.price) }} ₽</div></div>{% endif %}
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat-card" style="margin-top:16px">
+      <div class="chat-head">💬 Чат с менеджером</div>
+      <div class="chat-messages" id="chatMsgs">
+        {% if not messages %}
+          <div style="text-align:center;color:var(--gray-text);font-size:.85rem;padding:20px">Напишите нам — ответим в течение 15 минут</div>
+        {% endif %}
+        {% for msg in messages %}
+          <div class="chat-msg {% if msg.user_id == current_user.id %}mine{% else %}their{% endif %}">
+            <div class="chat-bubble">{{ msg.text }}</div>
+            <div class="chat-time">{{ msg.created_at.strftime('%d.%m %H:%M') }}</div>
+          </div>
+        {% endfor %}
+      </div>
+      <form class="chat-input" method="POST">
+        <input type="text" name="text" placeholder="Написать сообщение..." required autocomplete="off">
+        <button type="submit" class="chat-send">Отправить</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+const msgs=document.getElementById('chatMsgs');
+if(msgs)msgs.scrollTop=msgs.scrollHeight;
+</script>
+{% endblock %}

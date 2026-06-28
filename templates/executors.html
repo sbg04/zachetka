@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Авторы — Зачётка{% endblock %}
+{% block content %}
+<div class="executors-page">
+  <div class="section-inner">
+    <div class="section-head">
+      <span class="eyebrow">Команда</span>
+      <h2>Наши авторы-эксперты</h2>
+      <p>Все авторы проверены — у каждого профильное образование и опыт от 3 лет</p>
+    </div>
+    <div class="exec-grid" style="max-width:1100px;margin:0 auto">
+      {% for ep in executors %}
+      <div class="exec-card">
+        <div class="exec-avatar">{{ ep.avatar_emoji }}</div>
+        <div class="exec-name">{{ ep.user.name }}</div>
+        <div class="exec-spec">{{ ep.specializations }}</div>
+        <div class="exec-stars">
+          {% for i in range(ep.rating|int) %}★{% endfor %}
+          {{ ep.rating }}
+        </div>
+        <div class="exec-stats">
+          <div class="exec-stat"><strong>{{ ep.completed_orders }}</strong><span>работ</span></div>
+          <div class="exec-stat"><strong>{{ ep.experience_years }} лет</strong><span>опыт</span></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

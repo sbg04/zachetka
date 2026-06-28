@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Новая заявка — Зачётка{% endblock %}
+{% block content %}
+<div class="order-page">
+  <div class="order-form-wrap">
+    <div class="order-form-head">
+      <h2>📋 Новая заявка</h2>
+      <p>Заполните форму — менеджер свяжется за 15 минут и уточнит детали</p>
+    </div>
+    <div class="order-form-body">
+      <form method="POST" id="orderForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Тип работы *</label>
+            <select name="work_type" id="wt" required>
+              <option value="">— выберите —</option>
+              {% for wt in work_types %}<option value="{{ wt }}">{{ wt }}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Предмет *</label>
+            <input type="text" name="subject" placeholder="Напишите предмет..." required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Специальность / Направление</label>
+          <input type="text" name="specialty" placeholder="Например: Экономика 38.03.01 или Юриспруденция...">
+        </div>
+        <div class="form-group">
+          <label>Тема работы *</label>
+          <input type="text" name="topic" placeholder="Введите тему..." required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Страниц *</label>
+            <input type="number" name="pages" id="pages" min="1" max="500" placeholder="30" required>
+          </div>
+          <div class="form-group">
+            <label>Срок сдачи *</label>
+            <input type="date" name="deadline" id="deadline" required>
+          </div>
+          <div class="form-group">
+            <label>Уникальность</label>
+            <input type="text" name="uniqueness" placeholder="Например: 75% Antiplagiat.ru">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Дополнительные требования</label>
+          <textarea name="requirements" placeholder="Методичка вуза, обязательные источники, особые требования, количество источников..."></textarea>
+        </div>
+        <div class="price-preview" id="priceBox" style="display:none">
+          <span>Ориентировочная стоимость:</span>
+          <strong id="priceVal">—</strong>
+        </div>
+        <button type="submit" class="btn-submit" style="margin-top:16px">Отправить заявку →</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+const P={'Дипломная работа (ВКР)':150,'Курсовая работа':80,'Реферат':40,'Эссе':40,'Контрольная работа':40,'Лабораторная работа':60,'Решение задач':50,'Тест / Онлайн-экзамен':45,'Отчёт по практике':70,'Бизнес-план':90,'Презентация':55,'Статья / Научная работа':100,'Чертёж / Проект':80,'Консультация по диплому':200,'Редактура и оформление по ГОСТу':30};
+function upd(){const w=document.getElementById('wt').value,p=parseInt(document.getElementById('pages').value)||0,box=document.getElementById('priceBox'),val=document.getElementById('priceVal');if(w&&p){val.textContent='от '+((P[w]||45)*p).toLocaleString('ru')+' ₽';box.style.display='flex';}else box.style.display='none';}
+document.getElementById('wt').addEventListener('change',upd);
+document.getElementById('pages').addEventListener('input',upd);
+document.getElementById('deadline').min=new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

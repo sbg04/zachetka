@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Регистрация — Зачётка{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-top">
+      <div class="auth-top-icon">📓</div>
+      <h1>Создать аккаунт</h1>
+      <p>Это бесплатно и займёт минуту</p>
+    </div>
+    <form method="POST">
+      <div class="form-group"><label>Ваше имя *</label><input type="text" name="name" placeholder="Иван Иванов" required></div>
+      <div class="form-group"><label>Email *</label><input type="email" name="email" placeholder="student@mail.ru" required></div>
+      <div class="form-group"><label>Телефон</label><input type="tel" name="phone" placeholder="+7 999 000-00-00"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Пароль *</label><input type="password" name="password" placeholder="Мин. 6 символов" required minlength="6"></div>
+        <div class="form-group"><label>Повтор пароля *</label><input type="password" name="confirm" placeholder="••••••••" required></div>
+      </div>
+      <button type="submit" class="btn-submit">Зарегистрироваться →</button>
+    </form>
+    <div class="auth-switch">Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a></div>
+  </div>
+</div>
+{% endblock %}
